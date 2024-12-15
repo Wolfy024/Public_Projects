@@ -4,3 +4,4 @@ These projects range from from simple to complex. I intend to fill this reposito
 
 It was only made because i realized i am showcasing nothing.
 So, it's gonna start from absolute basics.
+I am rewriting everything starting today. [15th December, 2024]
