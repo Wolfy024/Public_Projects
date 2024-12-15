@@ -1,5 +1,5 @@
 from Architecture.Model import MNIST
-from data_download import data_loader
+from data import data_loader
 from torch.optim.lr_scheduler import StepLR
 import config
 import torch
