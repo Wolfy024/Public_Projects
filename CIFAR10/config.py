@@ -7,5 +7,5 @@ epochs = 50
 lr = 2e-3
 width = 32
 length = 32
-location = r"C:\Users\viraj\PycharmProjects\Public_Projects\CIFAR-10\Data"
+location = r"C:\Users\viraj\PycharmProjects\Public_Projects\CIFAR10\Data"
 

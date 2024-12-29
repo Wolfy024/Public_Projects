@@ -29,36 +29,27 @@ class ResidualBlock(nn.Module):
 class CIFAR10Model(nn.Module):
     def __init__(self, input_channels, num_features, num_classes):
         super(CIFAR10Model, self).__init__()
-
-        # Initial convolution layer (same as before)
-        self.conv1 = nn.Conv2d(input_channels, num_features, kernel_size=3, padding=1)
-        self.bn1 = nn.BatchNorm2d(num_features)
-        self.relu = nn.ReLU()
-
-        # Define the ResNet blocks
-        self.layer1 = ResidualBlock(num_features, num_features * 2)
-        self.layer2 = ResidualBlock(num_features * 2, num_features * 4)
-        self.layer3 = ResidualBlock(num_features * 4, num_features * 8)
-
-        # Global Average Pooling
-        self.gap = nn.AdaptiveAvgPool2d(1)
-
-        # Fully connected layers
-        self.fc = nn.Sequential(
-            nn.Linear(num_features * 8, 512),
-            nn.ReLU(),
-            nn.Dropout(0.5),
-            nn.Linear(512, 256),
-            nn.ReLU(),
-            nn.Dropout(0.5),
-            nn.Linear(256, num_classes)
-        )
+        self.conv1 = ResidualBlock(input_channels, num_features)
+        self.conv2 = ResidualBlock(num_features, num_features * 2)
+        self.conv3 = ResidualBlock(num_features * 2, num_features * 4)
+        self.conv4 = ResidualBlock(num_features * 4, num_features * 8)
+        self.conv5 = ResidualBlock(num_features * 8, num_features * 16)
+        self.pool = nn.MaxPool2d(4)
+        self.fc = nn.Linear(num_features * 16 * 8 * 8, 1024)
+        self.fc1 = nn.Linear(1024, 512)
+        self.fc2 = nn.Linear(512, 256)
+        self.fc3 = nn.Linear(256, num_classes)
 
     def forward(self, x):
-        x = self.relu(self.bn1(self.conv1(x)))  # Initial conv layer
-        x = self.layer1(x)  # First residual block
-        x = self.layer2(x)  # Second residual block
-        x = self.layer3(x)  # Third residual block
-        x = self.gap(x).view(x.size(0), -1)  # Global Average Pooling
-        x = self.fc(x)  # Fully connected layers
+        x = self.conv1(x)
+        x = self.conv2(x)
+        x = self.conv3(x)
+        x = self.conv4(x)
+        x = self.conv5(x)
+        x = self.pool(x)
+        x = x.view(x.size(0), -1)
+        x = torch.relu(self.fc(x))
+        x = torch.relu(self.fc1(x))
+        x = torch.relu(self.fc2(x))
+        x = self.fc3(x)
         return x

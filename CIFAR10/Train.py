@@ -45,7 +45,7 @@ if __name__ == "__main__":
     model = Model.CIFAR10Model(3, 8, 10)
     model = model.to(config.device)
     optim = torch.optim.AdamW(model.parameters(), lr=config.lr)
-    # scheduler = torch.optim.lr_scheduler.StepLR(optim, step_size=10, gamma=0.1)
+    scheduler = torch.optim.lr_scheduler.StepLR(optim, step_size=3, gamma=0.1)
     criterion = torch.nn.CrossEntropyLoss()
     train_loader, test_loader, classes = data.data_loader(config.location, config.batch_size)
     device = config.device
