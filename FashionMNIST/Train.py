@@ -1,4 +1,4 @@
-from Architecture.Model import MNIST
+from Architecture.Model2 import FashionMNIST2
 from data import data_loader
 from torch.optim.lr_scheduler import StepLR
 import config
@@ -46,10 +46,10 @@ if __name__ == "__main__":
     device = config.device
     torch.manual_seed(42)
     torch.cuda.manual_seed(42)
-    train_loader, test_loader = data_loader(config.data_location, config.batch_size)
-    model = MNIST(1, 32, 10)
+    train_loader, test_loader, classnames = data_loader(config.data_location, config.batch_size)
+    model = FashionMNIST2(1, 10)
     optim = torch.optim.Adam(model.parameters(), lr=0.001)
-    scheduler = StepLR(optim, step_size=10, gamma=0.1)
+    scheduler = StepLR(optim, step_size=4, gamma=0.1)
     criterion = torch.nn.CrossEntropyLoss()
     model.to(device)
     best_accuracy = 0.0
@@ -59,7 +59,7 @@ if __name__ == "__main__":
         accuracy = test(model, criterion, test_loader, device)
         if accuracy > best_accuracy:
             best_accuracy = accuracy
-            torch.save(model.state_dict(), rf"Models\mnist_best_model_{accuracy}.pth")
+            torch.save(model.state_dict(), rf"Models\FashionMNIST_{accuracy}.pth")
             print(f"Epoch {epoch}: New best accuracy = {best_accuracy:.4f}, model saved.")
         else:
             print(f"Epoch {epoch}: Accuracy = {accuracy:.4f}, no improvement.")

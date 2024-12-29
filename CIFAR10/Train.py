@@ -1,8 +1,7 @@
-from Architecture.Model import MNIST
-from data import data_loader
-from torch.optim.lr_scheduler import StepLR
-import config
+import data
+from Architecture import Model
 import torch
+import config
 
 
 def train(model, optim, criterion, train_loader, device, epoch):
@@ -16,14 +15,14 @@ def train(model, optim, criterion, train_loader, device, epoch):
         loss.backward()
         optim.step()
         total_loss += loss.item()
-        if batch_idx % 10000 == 0:
-            print(f"Epoch {epoch} Batch {batch_idx}: Loss = {loss.item():.4f}")
-        # avg_loss = total_loss / len(train_loader)
-        # print(f"Epoch {epoch} Training Loss: {avg_loss:.4f}")
+        # if batch_idx % 100 == 0:
+        #     print(f"Epoch {epoch} Batch {batch_idx}: Loss = {loss.item():.4f}")
 
 
-def test(model, criterion, test_loader, device):
+def evaluate(model, criterion, test_loader, device, epoch):
     model.eval()
+    torch.manual_seed(42)
+    torch.cuda.manual_seed(42)
     total_loss = 0
     total_correct = 0
     total_samples = 0
@@ -38,25 +37,23 @@ def test(model, criterion, test_loader, device):
             total_samples += target.size(0)
     avg_loss = total_loss / len(test_loader)
     accuracy = total_correct / total_samples * 100
-    print(f"Test Loss: {avg_loss:.4f}, Accuracy: {accuracy:.2f}%")
+    print(f"Test Loss: {avg_loss:.4f}, Accuracy: {accuracy:.2f}%, Epoch: {epoch}")
     return accuracy
 
 
 if __name__ == "__main__":
-    device = config.device
-    torch.manual_seed(42)
-    torch.cuda.manual_seed(42)
-    train_loader, test_loader = data_loader(config.data_location, config.batch_size)
-    model = MNIST(1, 32, 10)
-    optim = torch.optim.Adam(model.parameters(), lr=0.001)
-    scheduler = StepLR(optim, step_size=10, gamma=0.1)
+    model = Model.CIFAR10Model(3, 8, 10)
+    model = model.to(config.device)
+    optim = torch.optim.AdamW(model.parameters(), lr=config.lr)
+    # scheduler = torch.optim.lr_scheduler.StepLR(optim, step_size=10, gamma=0.1)
     criterion = torch.nn.CrossEntropyLoss()
-    model.to(device)
+    train_loader, test_loader, classes = data.data_loader(config.location, config.batch_size)
+    device = config.device
     best_accuracy = 0.0
 
     for epoch in range(config.epochs):
         train(model, optim, criterion, train_loader, device, epoch)
-        accuracy = test(model, criterion, test_loader, device)
+        accuracy = evaluate(model, criterion, test_loader, device, epoch)
         if accuracy > best_accuracy:
             best_accuracy = accuracy
             torch.save(model.state_dict(), rf"Models\mnist_best_model_{accuracy}.pth")
