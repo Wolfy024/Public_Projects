@@ -28,7 +28,7 @@ class ResidualBlock(nn.Module):
 
 class FashionMNIST(nn.Module):
     def __init__(self, in_channels, num_classes):
-        super(FashionMNIST2, self).__init__()
+        super(FashionMNIST, self).__init__()
         self.res1 = ResidualBlock(in_channels, 64)
         self.res2 = ResidualBlock(64, 128)
         self.res3 = ResidualBlock(128, 256)
