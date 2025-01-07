@@ -7,4 +7,3 @@ So, it's gonna start from absolute basics.
 I am rewriting everything starting today. [15th December, 2024]
 
 
-Most projects here are done under 10 epochs
