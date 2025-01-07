@@ -7,5 +7,5 @@ epochs = 50
 lr = 2e-3
 width = 32
 length = 32
-location = r"C:\Users\viraj\PycharmProjects\Public_Projects\CyclicWatermark2\Data\output.zip"
+location = r"C:\Users\viraj\PycharmProjects\Public_Projects\CyclicWatermark\Data\output.zip"
 
